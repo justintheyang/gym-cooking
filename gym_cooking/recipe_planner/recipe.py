@@ -87,6 +87,14 @@ class Salad(Recipe):
         self.add_goal()
         self.add_merge_actions()
 
+class SaladOL(Recipe):
+    def __init__(self):
+        Recipe.__init__(self, 'SaladOL')
+        self.add_ingredient(Onion(state_index=-1))
+        self.add_ingredient(Lettuce(state_index=-1))
+        self.add_goal()
+        self.add_merge_actions()
+
 class OnionSalad(Recipe):
     def __init__(self):
         Recipe.__init__(self, 'OnionSalad')
