@@ -8,6 +8,7 @@ from misc.game.gameplay import GamePlay
 from misc.metrics.metrics_bag import Bag
 
 import numpy as np
+import os
 import random
 import argparse
 from collections import namedtuple
@@ -46,6 +47,12 @@ def parse_arguments():
     parser.add_argument("--model2", type=str, default=None, help="Model type for agent 2 (bd, up, dc, fb, or greedy)")
     parser.add_argument("--model3", type=str, default=None, help="Model type for agent 3 (bd, up, dc, fb, or greedy)")
     parser.add_argument("--model4", type=str, default=None, help="Model type for agent 4 (bd, up, dc, fb, or greedy)")
+    
+    # Data saving
+    parser.add_argument('--output-dir', type=str, default=None,
+        help='Where to save metrics pickle')
+    parser.add_argument('--output-prefix', type=str, default=None,
+        help='Filename prefix for the pickle (no extension)')
 
     return parser.parse_args()
 
@@ -57,7 +64,15 @@ def fix_seed(seed):
 def initialize_agents(arglist):
     real_agents = []
 
-    with open('utils/levels/{}.txt'.format(arglist.level), 'r') as f:
+    if os.path.isfile(arglist.level):
+        init_path = arglist.level
+    else:
+        lvl = arglist.level[:-4] if arglist.level.endswith('.txt') else arglist.level
+        base_dir = os.path.dirname(__file__)
+        levels_dir = os.path.normpath(os.path.join(base_dir, '..', 'utils', 'levels'))
+        init_path = os.path.join(levels_dir, f'{lvl}.txt')
+
+    with open(init_path, 'r') as f:
         phase = 1
         recipes = []
         for line in f:
@@ -91,7 +106,7 @@ def main_loop(arglist):
     real_agents = initialize_agents(arglist=arglist)
 
     # Info bag for saving pkl files
-    bag = Bag(arglist=arglist, filename=env.filename)
+    bag = Bag(arglist=arglist, filename=env.filename, directory=env.directory)
     bag.set_recipe(recipe_subtasks=env.all_subtasks)
 
     while not env.done():
@@ -121,7 +136,7 @@ if __name__ == '__main__':
     if arglist.play:
         env = gym.envs.make("gym_cooking:overcookedEnv-v0", arglist=arglist)
         env.reset()
-        game = GamePlay(env.filename, env.world, env.sim_agents)
+        game = GamePlay(env.filename.split(os.sep)[2], env.world, env.sim_agents)
         game.on_execute()
     else:
         model_types = [arglist.model1, arglist.model2, arglist.model3, arglist.model4]

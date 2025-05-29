@@ -3,10 +3,10 @@ import copy
 import os
 
 class Bag:
-    def __init__(self, arglist, filename):
+    def __init__(self, arglist, filename, directory):
         self.data = {}
         self.arglist = arglist
-        self.directory = "misc/metrics/pickles/"
+        self.directory = directory
         os.makedirs(self.directory, exist_ok=True)
         self.filename = filename
         self.set_general()
@@ -67,5 +67,8 @@ class Bag:
             print("{}: {}\n".format(k, v))
         self.data["num_completed_subtasks_end"] = 0 if len(self.data["num_completed_subtasks"]) == 0 else self.data["num_completed_subtasks"][-1]
         print('completed {} / {} subtasks'.format(self.data["num_completed_subtasks_end"], self.data["num_total_subtasks"]))
-        pickle.dump(self.data, open(self.directory+self.filename+'.pkl', "wb"))
-        print("Saved to {}".format(self.directory+self.filename+'.pkl'))
+        
+        path = os.path.join(self.directory, self.filename + '.pkl')
+        with open(path, 'wb') as f:
+            pickle.dump(self.data, f)
+        print(f"Saved to {path}")

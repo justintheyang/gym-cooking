@@ -8,22 +8,27 @@ from misc.game.game import Game
 
 class GameImage(Game):
     def __init__(self, filename, world, sim_agents, record=False):
-        Game.__init__(self, world, sim_agents)
-        self.game_record_dir = 'misc/game/record/{}/'.format(filename)
+        super().__init__(world, sim_agents)
         self.record = record
+        
+        record_root = os.environ.get('OVERCOOKED_RECORD_ROOT')
+        if record_root:
+            self.game_record_dir = record_root
+        else:
+            # fallback to the old location next to this file
+            base_dir = os.path.dirname(__file__)
+            self.game_record_dir = os.path.join(base_dir, 'record', filename)        
 
 
     def on_init(self):
         super().on_init()
 
         if self.record:
-            # Make game_record folder if doesn't already exist
-            if not os.path.exists(self.game_record_dir):
-                os.makedirs(self.game_record_dir)
-
-            # Clear game_record folder
+            os.makedirs(self.game_record_dir, exist_ok=True)
             for f in os.listdir(self.game_record_dir):
-                os.remove(os.path.join(self.game_record_dir, f))
+                path = os.path.join(self.game_record_dir, f)
+                if os.path.isfile(path):
+                    os.remove(path)
 
     def get_image_obs(self):
         self.on_render()
@@ -38,5 +43,9 @@ class GameImage(Game):
         return img_rgb
 
     def save_image_obs(self, t):
-        self.on_render()
-        pygame.image.save(self.screen, '{}/t={:03d}.png'.format(self.game_record_dir, t))
+        if self.record:
+            # Ensure directory is still present
+            os.makedirs(self.game_record_dir, exist_ok=True)
+            frame_path = os.path.join(self.game_record_dir, f"t={t:03d}.png")
+            self.on_render()
+            pygame.image.save(self.screen, frame_path)

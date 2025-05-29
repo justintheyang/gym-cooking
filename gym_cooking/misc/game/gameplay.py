@@ -12,15 +12,17 @@ from collections import defaultdict
 from random import randrange
 import os
 from datetime import datetime
-
+from pathlib import Path
 
 class GamePlay(Game):
     def __init__(self, filename, world, sim_agents):
-        Game.__init__(self, world, sim_agents, play=True)
+        super().__init__(world, sim_agents, play=True)
         self.filename = filename
-        self.save_dir = 'misc/game/screenshots'
-        if not os.path.exists(self.save_dir):
-            os.makedirs(self.save_dir)
+        # point at the screenshots folder next to this file
+        ROOT = Path(__file__).resolve().parents[4]
+        self.save_dir = ROOT / 'docs' / 'exp1' / 'assets'
+        self.save_dir.mkdir(parents=True, exist_ok=True)
+        os.makedirs(self.save_dir, exist_ok=True)
 
         # tally up all gridsquare types
         self.gridsquares = []
@@ -37,7 +39,7 @@ class GamePlay(Game):
         elif event.type == pygame.KEYDOWN:
             # Save current image
             if event.key == pygame.K_RETURN:
-                image_name = '{}_{}.png'.format(self.filename, datetime.now().strftime('%m-%d-%y_%H-%M-%S'))
+                image_name = f'{self.filename}.png'
                 pygame.image.save(self.screen, '{}/{}'.format(self.save_dir, image_name))
                 print('just saved image {} to {}'.format(image_name, self.save_dir))
                 return

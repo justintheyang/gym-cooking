@@ -20,6 +20,7 @@ from utils.agent import COLORS
 import copy
 import networkx as nx
 import numpy as np
+import os
 from itertools import combinations, permutations, product
 from collections import namedtuple
 
@@ -38,6 +39,7 @@ class OvercookedEnvironment(gym.Env):
         self.arglist = arglist
         self.t = 0
         self.set_filename()
+        self.set_directory()
 
         # For visualizing episode.
         self.rep = []
@@ -75,23 +77,44 @@ class OvercookedEnvironment(gym.Env):
         return new_env
 
     def set_filename(self):
-        self.filename = "{}_agents{}_seed{}".format(self.arglist.level,\
-            self.arglist.num_agents, self.arglist.seed)
-        model = ""
-        if self.arglist.model1 is not None:
-            model += "_model1-{}".format(self.arglist.model1)
-        if self.arglist.model2 is not None:
-            model += "_model2-{}".format(self.arglist.model2)
-        if self.arglist.model3 is not None:
-            model += "_model3-{}".format(self.arglist.model3)
-        if self.arglist.model4 is not None:
-            model += "_model4-{}".format(self.arglist.model4)
-        self.filename += model
+        if self.arglist.output_prefix is not None:
+            self.filename = self.arglist.output_prefix
+        else:
+            self.filename = "{}_agents{}_seed{}".format(self.arglist.level,\
+                self.arglist.num_agents, self.arglist.seed)
+            model = ""
+            if self.arglist.model1 is not None:
+                model += "_model1-{}".format(self.arglist.model1)
+            if self.arglist.model2 is not None:
+                model += "_model2-{}".format(self.arglist.model2)
+            if self.arglist.model3 is not None:
+                model += "_model3-{}".format(self.arglist.model3)
+            if self.arglist.model4 is not None:
+                model += "_model4-{}".format(self.arglist.model4)
+            self.filename += model
+    
+    def set_directory(self):
+        if self.arglist.output_dir is not None:
+            self.directory = self.arglist.output_dir + os.sep
+        else:
+            self.directory = "misc/metrics/pickles/"
+        os.makedirs(self.directory, exist_ok=True)
 
     def load_level(self, level, num_agents):
+        if os.path.isfile(level):
+            level_path = level
+        else:
+            # strip any trailing “.txt”
+            lvl = level[:-4] if level.endswith('.txt') else level
+            # locate the built-in levels folder
+            levels_dir = os.path.normpath(
+                os.path.join(os.path.dirname(__file__),
+                             '..', 'utils', 'levels'))
+            level_path = os.path.join(levels_dir, f'{lvl}.txt')
+
         x = 0
         y = 0
-        with open('utils/levels/{}.txt'.format(level), 'r') as file:
+        with open(level_path, 'r') as file:
             # Mark the phases of reading.
             phase = 1
             for line in file:
