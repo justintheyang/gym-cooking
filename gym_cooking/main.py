@@ -37,7 +37,7 @@ def parse_arguments():
 
     # Visualizations
     parser.add_argument("--play", action="store_true", default=False, help="Play interactive game with keys")
-    parser.add_argument("--record", action="store_true", default=False, help="Save observation at each time step as an image in misc/game/record")
+    parser.add_argument("--record", action="store_true", default=True, help="Save observation at each time step as an image in misc/game/record")
 
     # Models
     # Valid options: `bd` = Bayes Delegation; `up` = Uniform Priors
