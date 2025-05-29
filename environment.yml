@@ -1,0 +1,16 @@
+name: design-overcooked
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - pygame
+  - pyglet
+  - cython
+  - pip
+  - pip:
+      - -e .
+
