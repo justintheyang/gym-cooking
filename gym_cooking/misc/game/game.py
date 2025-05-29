@@ -22,7 +22,8 @@ class Game:
         self._running = True
         self.world = world
         self.sim_agents = sim_agents
-        self.current_agent = self.sim_agents[0]
+        # modification to be able to open the environment with no agents for screenshots of stimuli
+        self.current_agent = self.sim_agents[0] if len(self.sim_agents) > 0 else None
         self.play = play
         
         # Visual parameters
