@@ -1,11 +1,13 @@
 import dill as pickle
 import copy
+import os
 
 class Bag:
     def __init__(self, arglist, filename):
         self.data = {}
         self.arglist = arglist
         self.directory = "misc/metrics/pickles/"
+        os.makedirs(self.directory, exist_ok=True)
         self.filename = filename
         self.set_general()
 
