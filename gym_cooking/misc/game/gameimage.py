@@ -17,7 +17,7 @@ class GameImage(Game):
         else:
             # fallback to the old location next to this file
             base_dir = os.path.dirname(__file__)
-            self.game_record_dir = os.path.join(base_dir, 'record', filename)        
+            self.game_record_dir = os.path.join(base_dir, 'records', filename)        
 
 
     def on_init(self):
