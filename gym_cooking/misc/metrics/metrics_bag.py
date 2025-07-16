@@ -69,7 +69,8 @@ class Bag:
         print('completed {} / {} subtasks'.format(self.data["num_completed_subtasks_end"], self.data["num_total_subtasks"]))
 
         path = os.path.join(self.directory, self.filename + '.pkl')
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        os.makedirs(os.path.dirname(path), exist_ok=True) 
+        
         
         with open(path, 'wb') as f:
             pickle.dump(self.data, f)
