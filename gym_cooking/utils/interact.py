@@ -39,32 +39,30 @@ def interact(agent, world):
                 world.remove(agent.holding)
                 agent.acquire(obj)
                 world.insert(agent.holding)
-                # if playable version, merge onto counter first
-                if world.arglist.play:
-                    gs.acquire(agent.holding)
-                    agent.release()
 
+        # if empty square in front → place or drop
+        elif not world.is_occupied(gs.location):
+            obj = agent.holding
+            gs.acquire(obj)
+            agent.release()
+            assert not world.get_object_at(gs.location, obj, find_held_objects=False).is_held, \
+                "Verifying put-down works"
 
         # if holding something, empty gridsquare in front --> chop or drop
         elif not world.is_occupied(gs.location):
             obj = agent.holding
-            if isinstance(gs, Cutboard) and obj.needs_chopped() and not world.arglist.play:
-                # normally chop, but if in playable game mode then put down first
-                obj.chop()
-            else:
-                gs.acquire(obj) # obj is put onto gridsquare
-                agent.release()
-                assert world.get_object_at(gs.location, obj, find_held_objects =\
-                    False).is_held == False, "Verifying put down works"
+            gs.acquire(obj)
+            agent.release()
 
     # if not holding anything
     elif agent.holding is None:
         # not empty in front --> pick up
         if world.is_occupied(gs.location) and not isinstance(gs, Delivery):
             obj = world.get_object_at(gs.location, None, find_held_objects = False)
-            # if in playable game mode, then chop raw items on cutting board
-            if isinstance(gs, Cutboard) and obj.needs_chopped() and world.arglist.play:
+            # chop raw items on cutting board
+            if isinstance(gs, Cutboard) and obj.needs_chopped():
                 obj.chop()
+            # otherwise pick it up 
             else:
                 gs.release()
                 agent.acquire(obj)
