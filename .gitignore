@@ -10,6 +10,7 @@ gym_cooking/misc/metrics/*data*/
 gym_cooking/misc/metrics/*graph*/
 gym_cooking/misc/metrics/*recipe*/
 gym_cooking/misc/game/record/
+gym_cooking/misc/game/records/
 gym_cooking/misc/game/screenshots/
 
 # Visualizations
