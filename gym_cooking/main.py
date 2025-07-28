@@ -136,7 +136,7 @@ if __name__ == '__main__':
     if arglist.play:
         env = gym.envs.make("gym_cooking:overcookedEnv-v0", arglist=arglist)
         env.reset()
-        game = GamePlay(env.filename.split(os.sep)[2], env.world, env.sim_agents)
+        game = GamePlay(os.path.basename(env.filename), env.world, env.sim_agents)
         game.on_execute()
     else:
         model_types = [arglist.model1, arglist.model2, arglist.model3, arglist.model4]

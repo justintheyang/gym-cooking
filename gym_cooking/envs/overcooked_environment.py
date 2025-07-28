@@ -79,6 +79,8 @@ class OvercookedEnvironment(gym.Env):
     def set_filename(self):
         if self.arglist.output_prefix is not None:
             self.filename = self.arglist.output_prefix
+        elif self.arglist.play:
+            self.filename = self.arglist.level
         else:
             self.filename = "{}_agents{}_seed{}".format(self.arglist.level,\
                 self.arglist.num_agents, self.arglist.seed)
@@ -96,6 +98,8 @@ class OvercookedEnvironment(gym.Env):
     def set_directory(self):
         if self.arglist.output_dir is not None:
             self.directory = self.arglist.output_dir + os.sep
+        elif self.arglist.play:
+            self.directory = "data/play/"
         else:
             self.directory = "misc/metrics/pickles/"
         os.makedirs(self.directory, exist_ok=True)
