@@ -38,6 +38,7 @@ def parse_arguments():
 
     # Visualizations
     parser.add_argument("--play", action="store_true", default=False, help="Play interactive game with keys")
+    parser.add_argument("--layout", action="store_true", default=False, help="Screenshot empty layout of the level")
     parser.add_argument("--record", action="store_true", default=True, help="Save observation at each time step as an image in misc/game/record")
 
     # Models
@@ -138,6 +139,11 @@ if __name__ == '__main__':
         env.reset()
         game = GamePlay(os.path.basename(env.filename), env.world, env.sim_agents)
         game.on_execute()
+    elif arglist.layout: 
+        env = gym.envs.make("gym_cooking:overcookedEnv-v0", arglist=arglist)
+        env.reset()
+        filename = os.path.basename(arglist.level).replace('.txt', '.png')
+        env.game.save_image_obs(t=0, filename=filename)
     else:
         model_types = [arglist.model1, arglist.model2, arglist.model3, arglist.model4]
         assert len(list(filter(lambda x: x is not None,

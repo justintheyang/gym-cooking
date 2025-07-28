@@ -7,9 +7,10 @@ from misc.game.game import Game
 
 
 class GameImage(Game):
-    def __init__(self, filename, world, sim_agents, record=False):
+    def __init__(self, filename, world, sim_agents, record=False, layout=False):
         super().__init__(world, sim_agents)
         self.record = record
+        self.layout = layout
         
         record_root = os.environ.get('OVERCOOKED_RECORD_ROOT')
         if record_root:
@@ -23,7 +24,7 @@ class GameImage(Game):
     def on_init(self):
         super().on_init()
 
-        if self.record:
+        if self.record and not self.layout:
             os.makedirs(self.game_record_dir, exist_ok=True)
             for f in os.listdir(self.game_record_dir):
                 path = os.path.join(self.game_record_dir, f)
@@ -42,10 +43,13 @@ class GameImage(Game):
                 img_rgb[j, i, 2] = color.r
         return img_rgb
 
-    def save_image_obs(self, t):
+    def save_image_obs(self, t, filename=None):
+        if not filename:
+            filename = f"t={t:03d}.png"
         if self.record:
             # Ensure directory is still present
+            print(self.game_record_dir)
             os.makedirs(self.game_record_dir, exist_ok=True)
-            frame_path = os.path.join(self.game_record_dir, f"t={t:03d}.png")
+            frame_path = os.path.join(self.game_record_dir, filename)
             self.on_render()
             pygame.image.save(self.screen, frame_path)
