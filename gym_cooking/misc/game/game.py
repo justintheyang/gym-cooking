@@ -95,6 +95,14 @@ class Game:
             pygame.draw.rect(self.screen, Color.COUNTER, fill)
             pygame.draw.rect(self.screen, Color.COUNTER_BORDER, fill, 1)
             self.draw('cutboard', self.tile_size, sl)
+            
+        elif isinstance(gs, FoodDispenser):
+            pygame.draw.rect(self.screen, Color.FOOD_DISPENSER, fill)
+            pygame.draw.rect(self.screen, Color.COUNTER_BORDER, fill, 8)
+            self.draw(
+                'Fresh' + gs.name.replace('Dispenser', ''), 
+                (self.scale * 0.8, self.scale * 0.8), 
+                (sl[0] + self.scale * 0.1, sl[1] + self.scale * 0.1))
 
         return
 

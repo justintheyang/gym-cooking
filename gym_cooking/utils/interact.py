@@ -48,12 +48,6 @@ def interact(agent, world):
             assert not world.get_object_at(gs.location, obj, find_held_objects=False).is_held, \
                 "Verifying put-down works"
 
-        # if holding something, empty gridsquare in front --> chop or drop
-        elif not world.is_occupied(gs.location):
-            obj = agent.holding
-            gs.acquire(obj)
-            agent.release()
-
     # if not holding anything
     elif agent.holding is None:
         # not empty in front --> pick up
@@ -67,6 +61,8 @@ def interact(agent, world):
                 gs.release()
                 agent.acquire(obj)
 
-        # if empty in front --> interact
-        elif not world.is_occupied(gs.location):
-            pass
+        # if food dispenser --> dispense
+        elif not world.is_occupied(gs.location) and isinstance(gs, FoodDispenser):
+            ingredient = gs.dispense()
+            world.insert(ingredient)
+            agent.acquire(ingredient)

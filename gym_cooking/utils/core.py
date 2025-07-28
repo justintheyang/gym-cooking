@@ -23,6 +23,9 @@ class Rep:
     TOMATO = 't'
     LETTUCE = 'l'
     ONION = 'o'
+    TOMATODISPENSER = 'T'
+    LETTUCEDISPENSER = 'L'
+    ONIONDISPENSER = 'O'
     PLATE = 'p'
 
 class GridSquare:
@@ -115,6 +118,46 @@ class Delivery(GridSquare):
     def __hash__(self):
         return GridSquare.__hash__(self)
 
+class FoodDispenser(GridSquare):
+    def __init__(self, name, location):
+        GridSquare.__init__(self, name, location)
+        self.rep = None  # will be set in subclasses
+        self.collidable = True
+        self.dynamic = False
+        
+    def dispense(self):
+        """
+        Return a brand-new Object containing the appropriate Food.
+        Must be overridden by subclasses.
+        """
+        raise NotImplementedError(f"{self.name}.dispense() not implemented")
+
+class TomatoDispenser(FoodDispenser):
+    def __init__(self, location):
+        super().__init__("TomatoDispenser", location)
+        self.rep = Rep.TOMATODISPENSER
+
+    def dispense(self):
+        # Creates a single fresh tomato on the tile
+        return Object(self.location, Tomato())
+    
+class LettuceDispenser(FoodDispenser):
+    def __init__(self, location):
+        super().__init__("LettuceDispenser", location)
+        self.rep = Rep.LETTUCEDISPENSER
+
+    def dispense(self):
+        # Creates a single fresh lettuce on the tile
+        return Object(self.location, Lettuce())
+
+class OnionDispenser(FoodDispenser):
+    def __init__(self, location):
+        super().__init__("OnionDispenser", location)
+        self.rep = Rep.ONIONDISPENSER
+
+    def dispense(self):
+        # Creates a single fresh onion on the tile
+        return Object(self.location, Onion())
 
 # -----------------------------------------------------------
 # OBJECTS
@@ -355,6 +398,9 @@ RepToClass = {
     Rep.LETTUCE: globals()['Lettuce'],
     Rep.ONION: globals()['Onion'],
     Rep.PLATE: globals()['Plate'],
+    Rep.TOMATODISPENSER: globals()['TomatoDispenser'],
+    Rep.LETTUCEDISPENSER: globals()['LettuceDispenser'],
+    Rep.ONIONDISPENSER: globals()['OnionDispenser'],
 }
 
 
