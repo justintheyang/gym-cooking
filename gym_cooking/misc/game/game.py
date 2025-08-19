@@ -73,6 +73,8 @@ class Game:
         # Draw agents and their holdings
         for agent in self.sim_agents:
             self.draw_agent(agent)
+            
+        self.draw_start_locations()
 
         if self.play:
             pygame.display.flip()
@@ -98,7 +100,7 @@ class Game:
             
         elif isinstance(gs, FoodDispenser):
             pygame.draw.rect(self.screen, Color.FOOD_DISPENSER, fill)
-            pygame.draw.rect(self.screen, Color.COUNTER_BORDER, fill, 8)
+            pygame.draw.rect(self.screen, Color.COUNTER_BORDER, fill, 4)
             self.draw(
                 'Fresh' + gs.name.replace('Dispenser', ''), 
                 (self.scale * 0.8, self.scale * 0.8), 
@@ -139,6 +141,30 @@ class Game:
                 obj.merge(plate)
         else:
             self.draw(obj.full_name, self.tile_size, self.scaled_location(obj.location))
+            
+    def draw_start_locations(self):
+        # Only for layout screenshots & when the flag is set
+        n = getattr(self.world.arglist, "num_start_locations", None)
+        if not n or not getattr(self.world.arglist, "layout", False):
+            return
+
+        # Prefer the parsed positions from the level file, fall back to sim agents (if any)
+        if hasattr(self.world, "start_locations") and self.world.start_locations:
+            starts = self.world.start_locations[:n]
+        else:
+            starts = [a.location for a in self.sim_agents][:n]
+
+        for idx, loc in enumerate(starts):
+            shrink = 0.4
+            sl = self.scaled_location(loc)
+            pad = (self.scale * (1 - shrink)) / 2
+            scale = self.scale * shrink
+            rect = pygame.Rect(sl[0] + pad, sl[1] + pad, scale, scale)
+            color = Color.START1 if idx == 0 else Color.START2
+            # Thick outline so it’s visible on counters/boards
+            pygame.draw.rect(self.screen, color, rect)
+            pygame.draw.rect(self.screen, Color.COUNTER_BORDER, rect, 1)
+
 
     def scaled_location(self, loc):
         """Return top-left corner of scaled location given coordinates loc, e.g. (3, 4)"""

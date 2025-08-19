@@ -153,12 +153,14 @@ class OvercookedEnvironment(gym.Env):
 
                 # Phase 3: Read in agent locations (up to num_agents).
                 elif phase == 3:
+                    loc = line.split(' ')
+                    start_xy = (int(loc[0]), int(loc[1]))
+                    self.world.start_locations.append(start_xy)
                     if len(self.sim_agents) < num_agents:
-                        loc = line.split(' ')
                         sim_agent = SimAgent(
                                 name='agent-'+str(len(self.sim_agents)+1),
                                 id_color=COLORS[len(self.sim_agents)],
-                                location=(int(loc[0]), int(loc[1])))
+                                location=start_xy)
                         self.sim_agents.append(sim_agent)
 
         self.distances = {}
@@ -171,6 +173,7 @@ class OvercookedEnvironment(gym.Env):
         self.world = World(arglist=self.arglist)
         self.recipes = []
         self.sim_agents = []
+        self.world.start_locations = []
         self.agent_actions = {}
         self.t = 0
 

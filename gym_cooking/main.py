@@ -39,6 +39,8 @@ def parse_arguments():
     # Visualizations
     parser.add_argument("--play", action="store_true", default=False, help="Play interactive game with keys")
     parser.add_argument("--layout", action="store_true", default=False, help="Screenshot empty layout of the level")
+    parser.add_argument("--num-start-locations", type=int, choices=[1, 2], default=None,
+        help="When used with --layout, outline the start tile(s): 1 = agent1 (blue), 2 = agent1+agent2 (blue/red)")
     parser.add_argument("--record", action="store_true", default=True, help="Save observation at each time step as an image in misc/game/record")
 
     # Models
