@@ -50,7 +50,8 @@ def parse_arguments():
     parser.add_argument("--model2", type=str, default=None, help="Model type for agent 2 (bd, up, dc, fb, or greedy)")
     parser.add_argument("--model3", type=str, default=None, help="Model type for agent 3 (bd, up, dc, fb, or greedy)")
     parser.add_argument("--model4", type=str, default=None, help="Model type for agent 4 (bd, up, dc, fb, or greedy)")
-    
+    parser.add_argument("--recipe", type=str, default=None, help="Override recipe name in the level file (e.g., Salad or SaladOL). If level file contains no recipe section, this will be used.")
+
     # Data saving
     parser.add_argument('--output-dir', type=str, default=None,
         help='Where to save metrics pickle')
