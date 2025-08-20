@@ -7,13 +7,15 @@ from misc.game.game import Game
 
 
 class GameImage(Game):
-    def __init__(self, filename, world, sim_agents, record=False, layout=False):
+    def __init__(self, filename, world, sim_agents, record=False, layout=False, directory=None):
         super().__init__(world, sim_agents)
         self.record = record
         self.layout = layout
         
         record_root = os.environ.get('OVERCOOKED_RECORD_ROOT')
-        if record_root:
+        if directory:
+            self.game_record_dir = directory
+        elif record_root:
             self.game_record_dir = record_root
         else:
             # fallback to the old location next to this file
@@ -48,7 +50,7 @@ class GameImage(Game):
             filename = f"t={t:03d}.png"
         if self.record:
             # Ensure directory is still present
-            print(self.game_record_dir)
+            print(f'Saving to {self.game_record_dir}')
             os.makedirs(self.game_record_dir, exist_ok=True)
             frame_path = os.path.join(self.game_record_dir, filename)
             self.on_render()

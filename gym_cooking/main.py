@@ -132,7 +132,7 @@ def main_loop(arglist):
     real_agents = initialize_agents(arglist=arglist)
 
     # Info bag for saving pkl files
-    bag = Bag(arglist=arglist, filename=env.filename, directory=env.directory)
+    bag = Bag(arglist=arglist, filename=env.filename, directory=env.pickles_dir)
     bag.set_recipe(recipe_subtasks=env.all_subtasks)
 
     while not env.done():

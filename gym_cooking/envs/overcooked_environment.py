@@ -78,7 +78,7 @@ class OvercookedEnvironment(gym.Env):
 
     def set_filename(self):
         if self.arglist.output_prefix is not None:
-            self.filename = self.arglist.output_prefix
+            self.filename = f'{self.arglist.output_prefix}-seed={self.arglist.seed}'
         elif self.arglist.play:
             self.filename = self.arglist.level
         else:
@@ -98,6 +98,7 @@ class OvercookedEnvironment(gym.Env):
     def set_directory(self):
         if self.arglist.output_dir is not None:
             self.directory = self.arglist.output_dir + os.sep
+            self.pickles_dir = os.path.join(self.directory, 'pickles')
         elif self.arglist.play:
             self.directory = "data/play/"
         else:
@@ -218,7 +219,12 @@ class OvercookedEnvironment(gym.Env):
                     world=self.world,
                     sim_agents=self.sim_agents,
                     record=self.arglist.record,
-                    layout=self.arglist.layout)
+                    layout=self.arglist.layout,
+                    directory=os.path.join(
+                        self.directory, 
+                        'pickles',
+                        self.arglist.output_prefix, 
+                        f'seed={self.arglist.seed}'))
             self.game.on_init()
             if self.arglist.record and not self.arglist.layout:
                 self.game.save_image_obs(self.t)
