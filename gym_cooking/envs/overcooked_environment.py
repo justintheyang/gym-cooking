@@ -518,92 +518,92 @@ class OvercookedEnvironment(gym.Env):
         # Save all distances under world as well.
         self.world.distances = self.distances
 
-def is_open_start_tile(self, xy):
-    """Open if it's inside the grid, not collidable, and not a supply/cut/delivery/counter."""
-    x, y = xy
-    if x < 0 or y < 0 or x >= self.world.width or y >= self.world.height:
-        return False
-    gs = self.world.get_gridsquare_at(location=xy)
-    # Start tiles must be non-collidable (Floor) and not occupied by a stationary collidable
-    return (gs is not None) and (not gs.collidable)
+    def is_open_start_tile(self, xy):
+        """Open if it's inside the grid, not collidable, and not a supply/cut/delivery/counter."""
+        x, y = xy
+        if x < 0 or y < 0 or x >= self.world.width or y >= self.world.height:
+            return False
+        gs = self.world.get_gridsquare_at(location=xy)
+        # Start tiles must be non-collidable (Floor) and not occupied by a stationary collidable
+        return (gs is not None) and (not gs.collidable)
 
-def scan_open(self, start_xy, dir_primary, dir_secondary):
-    """
-    Scan within the interior bounding box (exclude outer walls) in the pattern you specified:
-    - Agent 1: move left along the row; when exhausted, move down a row, reset x to right interior.
-    - Agent 2: move up along the column; when exhausted, move right a column, reset y to bottom interior.
-    """
-    # interior bounds (exclude border walls)
-    xmin, xmax = 1, max(1, self.world.width - 2)
-    ymin, ymax = 1, max(1, self.world.height - 2)
+    def scan_open(self, start_xy, dir_primary, dir_secondary):
+        """
+        Scan within the interior bounding box (exclude outer walls) in the pattern you specified:
+        - Agent 1: move left along the row; when exhausted, move down a row, reset x to right interior.
+        - Agent 2: move up along the column; when exhausted, move right a column, reset y to bottom interior.
+        """
+        # interior bounds (exclude border walls)
+        xmin, xmax = 1, max(1, self.world.width - 2)
+        ymin, ymax = 1, max(1, self.world.height - 2)
 
-    # clamp start into interior
-    x, y = start_xy
-    x = min(max(x, xmin), xmax)
-    y = min(max(y, ymin), ymax)
+        # clamp start into interior
+        x, y = start_xy
+        x = min(max(x, xmin), xmax)
+        y = min(max(y, ymin), ymax)
 
-    visited = set()
-    for _ in range(max(1, (xmax - xmin + 1) * (ymax - ymin + 1))):
-        if (x, y) not in visited and self.is_open_start_tile((x, y)):
-            return (x, y)
-        visited.add((x, y))
+        visited = set()
+        for _ in range(max(1, (xmax - xmin + 1) * (ymax - ymin + 1))):
+            if (x, y) not in visited and self.is_open_start_tile((x, y)):
+                return (x, y)
+            visited.add((x, y))
 
-        # step primary
-        x += dir_primary[0]
-        y += dir_primary[1]
+            # step primary
+            x += dir_primary[0]
+            y += dir_primary[1]
 
-        # if moved out of interior, wrap & step secondary
-        if not (xmin <= x <= xmax and ymin <= y <= ymax):
-            # undo last step
-            x -= dir_primary[0]
-            y -= dir_primary[1]
-            # step secondary
-            x += dir_secondary[0]
-            y += dir_secondary[1]
-            # reset along primary axis to appropriate interior edge
-            if dir_primary[0] != 0:  # horizontal primary (agent 1)
-                x = xmax if dir_primary[0] < 0 else xmin
-            if dir_primary[1] != 0:  # vertical primary (agent 2)
-                y = ymax if dir_primary[1] < 0 else ymin
-            # clamp
-            x = min(max(x, xmin), xmax)
-            y = min(max(y, ymin), ymax)
-    # As a last resort, return top-left interior
-    return (xmin, ymin)
+            # if moved out of interior, wrap & step secondary
+            if not (xmin <= x <= xmax and ymin <= y <= ymax):
+                # undo last step
+                x -= dir_primary[0]
+                y -= dir_primary[1]
+                # step secondary
+                x += dir_secondary[0]
+                y += dir_secondary[1]
+                # reset along primary axis to appropriate interior edge
+                if dir_primary[0] != 0:  # horizontal primary (agent 1)
+                    x = xmax if dir_primary[0] < 0 else xmin
+                if dir_primary[1] != 0:  # vertical primary (agent 2)
+                    y = ymax if dir_primary[1] < 0 else ymin
+                # clamp
+                x = min(max(x, xmin), xmax)
+                y = min(max(y, ymin), ymax)
+        # As a last resort, return top-left interior
+        return (xmin, ymin)
 
-def auto_place_agents(self, num_agents):
-    """
-    Places agents by your policy:
-      - agent1: start at top-right interior (width-2, 1); scan left, then down rows
-      - agent2: start at bottom-left interior (1, height-2); scan up, then right columns
-      - agent3/4: nominal (6,6) but we never use them; placeholders.
-    """
-    w, h = self.world.width, self.world.height
-    top_right_interior = (max(1, w - 2), 1)
-    bottom_left_interior = (1, max(1, h - 2))
+    def auto_place_agents(self, num_agents):
+        """
+        Places agents by your policy:
+        - agent1: start at top-right interior (width-2, 1); scan left, then down rows
+        - agent2: start at bottom-left interior (1, height-2); scan up, then right columns
+        - agent3/4: nominal (6,6) but we never use them; placeholders.
+        """
+        w, h = self.world.width, self.world.height
+        top_right_interior = (max(1, w - 2), 1)
+        bottom_left_interior = (1, max(1, h - 2))
 
-    starts = []
-    # Agent 1
-    a1 = self.scan_open(top_right_interior, dir_primary=(-1, 0), dir_secondary=(0, 1))
-    starts.append(a1)
-    # Agent 2
-    a2 = self.scan_open(bottom_left_interior, dir_primary=(0, -1), dir_secondary=(1, 0))
-    if a2 == a1:
-        a2 = self.scan_open((a2[0], a2[1]-1), dir_primary=(0, -1), dir_secondary=(1, 0))
-    starts.append(a2)
+        starts = []
+        # Agent 1
+        a1 = self.scan_open(top_right_interior, dir_primary=(-1, 0), dir_secondary=(0, 1))
+        starts.append(a1)
+        # Agent 2
+        a2 = self.scan_open(bottom_left_interior, dir_primary=(0, -1), dir_secondary=(1, 0))
+        if a2 == a1:
+            a2 = self.scan_open((a2[0], a2[1]-1), dir_primary=(0, -1), dir_secondary=(1, 0))
+        starts.append(a2)
 
-    # Agents 3 & 4: placeholders
-    a34 = (6, 6)
-    starts.append(a34)
-    starts.append(a34)
+        # Agents 3 & 4: placeholders
+        a34 = (6, 6)
+        starts.append(a34)
+        starts.append(a34)
 
-    # Register starts and create SimAgents (up to num_agents)
-    for idx, xy in enumerate(starts[:max(2, num_agents)]):
-        self.world.start_locations.append(xy)
-        if len(self.sim_agents) < num_agents:
-            sim_agent = SimAgent(
-                name=f'agent-{len(self.sim_agents)+1}',
-                id_color=COLORS[len(self.sim_agents)],
-                location=xy
-            )
-            self.sim_agents.append(sim_agent)
+        # Register starts and create SimAgents (up to num_agents)
+        for idx, xy in enumerate(starts[:max(2, num_agents)]):
+            self.world.start_locations.append(xy)
+            if len(self.sim_agents) < num_agents:
+                sim_agent = SimAgent(
+                    name=f'agent-{len(self.sim_agents)+1}',
+                    id_color=COLORS[len(self.sim_agents)],
+                    location=xy
+                )
+                self.sim_agents.append(sim_agent)
