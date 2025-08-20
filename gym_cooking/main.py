@@ -66,8 +66,17 @@ def fix_seed(seed):
     random.seed(seed)
 
 def initialize_agents(arglist):
+    """
+    Always create `num_agents` RealAgents.
+
+    - If the level file has a phase‑2 recipe list, use it.
+    - Otherwise, use --recipe if provided, else default to Salad.
+    - Do NOT depend on a phase‑3 'start locations' section.
+      (Sim agents/positions come from the environment.)
+    """
     real_agents = []
 
+    # Resolve the level file path
     if os.path.isfile(arglist.level):
         init_path = arglist.level
     else:
@@ -76,29 +85,42 @@ def initialize_agents(arglist):
         levels_dir = os.path.normpath(os.path.join(base_dir, '..', 'utils', 'levels'))
         init_path = os.path.join(levels_dir, f'{lvl}.txt')
 
+    # Parse recipes (phase 2)
+    recipes = []
+    phase = 1
     with open(init_path, 'r') as f:
-        phase = 1
-        recipes = []
-        for line in f:
-            line = line.strip('\n')
+        for raw in f:
+            line = raw.rstrip('\n')
             if line == '':
                 phase += 1
+                continue
+            if phase == 2:
+                name = line.strip()
+                if not name:
+                    continue
+                try:
+                    recipes.append(globals()[name]())
+                except KeyError:
+                    raise ValueError(f"Unknown recipe '{name}' in {init_path}")
 
-            # phase 2: read in recipe list
-            elif phase == 2:
-                recipes.append(globals()[line]())
+    # Fallback if no recipe section present in file
+    if not recipes:
+        recipe_name = arglist.recipe if getattr(arglist, "recipe", None) else "Salad"
+        try:
+            recipes = [globals()[recipe_name]()]
+        except KeyError:
+            raise ValueError(f"Unknown recipe '{recipe_name}' from --recipe")
 
-            # phase 3: read in agent locations (up to num_agents)
-            elif phase == 3:
-                if len(real_agents) < arglist.num_agents:
-                    loc = line.split(' ')
-                    real_agent = RealAgent(
-                            arglist=arglist,
-                            name='agent-'+str(len(real_agents)+1),
-                            id_color=COLORS[len(real_agents)],
-                            recipes=recipes)
-                    real_agents.append(real_agent)
-
+    # Create the requested number of RealAgents
+    for i in range(arglist.num_agents):
+        real_agents.append(
+            RealAgent(
+                arglist=arglist,
+                name=f'agent-{i+1}',
+                id_color=COLORS[i],
+                recipes=recipes
+            )
+        )
     return real_agents
 
 def main_loop(arglist):

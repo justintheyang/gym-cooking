@@ -200,6 +200,13 @@ def get_subtask_obj(subtask):
                 type_="is_object", state=state)
         goal_obj = copy.copy(start_obj)
 
+    elif isinstance(subtask, recipe.Get):
+        start_obj = []  # nothing required to exist before
+        goal_obj  = get_obj(obj_string=subtask.args[0],
+                            type_="is_object",
+                            state=FoodState.FRESH)
+        return start_obj, goal_obj
+
     elif subtask is None:
         return None, None
 

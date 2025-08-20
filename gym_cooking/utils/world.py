@@ -43,8 +43,8 @@ class World:
             objs += o
         for obj in objs:
             self.add_object(obj, obj.location)
-        for obj in self.objects["Tomato"]:
-            self.add_object(obj, obj.location)
+        # for obj in self.objects["Tomato"]:
+        #     self.add_object(obj, obj.location)
         return self.rep
 
     def print_objects(self):
@@ -237,7 +237,7 @@ class World:
         objs = list()
 
         for key in sorted(self.objects.keys()):
-            if key != "Counter" and key != "Floor" and "Supply" not in key and key != "Delivery" and key != "Cutboard":
+            if key != "Counter" and key != "Floor" and "Supply" not in key and key != "Delivery" and key != "Cutboard" and "Dispenser" not in key:
                 objs.append(tuple(list(map(lambda o: o.get_repr(), self.objects[key]))))
 
         # Must return a tuple because this is going to get hashed.

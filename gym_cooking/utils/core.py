@@ -124,6 +124,10 @@ class FoodDispenser(GridSquare):
         self.rep = None  # will be set in subclasses
         self.collidable = True
         self.dynamic = False
+    def __eq__(self, other):
+        return GridSquare.__eq__(self, other)
+    def __hash__(self):
+        return GridSquare.__hash__(self)
         
     def dispense(self):
         """

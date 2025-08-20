@@ -363,6 +363,14 @@ class OvercookedEnvironment(gym.Env):
                             map(lambda a: a.location, list(
                                 filter(lambda a: a.name in subtask_agent_names and a.holding == start_obj[1], self.sim_agents))))
 
+        # For Get(X), you need to go from your current location(s) (A) to a dispenser (B).
+        # A: current locations of the subtask’s agent(s)
+        elif isinstance(subtask, recipe.Get):
+            A_locs = [a.location for a in self.sim_agents if a.name in subtask_agent_names]
+            # B: all dispenser tiles for that ingredient (already encoded as a “subtask action obj”)
+            B_locs = self.world.get_all_object_locs(obj=subtask_action_obj)
+            return A_locs, B_locs
+
         else:
             return [], []
 
