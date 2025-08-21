@@ -7,12 +7,15 @@ import random
 from queue import PriorityQueue
 
 StringToGridSquare = {
-        "Tomato"   : Counter,
-        "Lettuce"  : Counter,
-        "Onion"    : Counter,
-        "Plate"    : Counter,
-        "Cutboard" : Cutboard,
-        "Delivery" : Delivery,
+        # "Tomato"  : Counter,
+        # "Lettuce" : Counter,
+        # "Onion"   : Counter,
+        "Tomato"  : TomatoDispenser,
+        "Lettuce" : LettuceDispenser,
+        "Onion"   : OnionDispenser,
+        "Plate"   : Counter,
+        "Cutboard": Cutboard,
+        "Delivery": Delivery,
         }
 
 StringToObject = {
@@ -69,11 +72,16 @@ def get_single_actions(env, agent):
             # Can interact with deliveries
             elif isinstance(gs, Delivery):
                 actions.append(t)
-            # Can interact with others if at least one of me or gs is holding something, or mergeable
+            # agent can put down
             elif gs.holding is None and agent.holding is not None:
                 actions.append(t)
+            # agent can pick up
             elif gs.holding is not None and isinstance(gs.holding, Object) and agent.holding is None:
                 actions.append(t)
+            # gs can dispense to agent
+            elif isinstance(gs, FoodDispenser) and gs.holding is None and agent.holding is None:
+                actions.append(t)
+            # mergable
             elif gs.holding is not None and isinstance(gs.holding, Object) and\
                 agent.holding is not None and mergeable(agent.holding, gs.holding):
                 actions.append(t)
