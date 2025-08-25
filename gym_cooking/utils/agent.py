@@ -143,6 +143,13 @@ class RealAgent:
             if self.subtask in self.incomplete_subtasks:
                 self.incomplete_subtasks.remove(self.subtask)
                 self.subtask_complete = True
+        # # TODO: does this break stuff?
+        for subtask in self.incomplete_subtasks:
+            if isinstance(subtask, Get):
+                _, goal_obj = nav_utils.get_subtask_obj(subtask=subtask)
+                cur_obj_count = len(world.get_all_object_locs(obj=goal_obj))
+                if cur_obj_count > 0:
+                    self.incomplete_subtasks.remove(subtask)
         print('{} incomplete subtasks:'.format(
             color(self.name, self.color)),
             ', '.join(str(t) for t in self.incomplete_subtasks))

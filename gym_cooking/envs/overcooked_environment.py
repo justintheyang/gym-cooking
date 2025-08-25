@@ -222,7 +222,7 @@ class OvercookedEnvironment(gym.Env):
                     layout=self.arglist.layout,
                     directory=os.path.join(
                         self.directory, 
-                        'pickles',
+                        'records',
                         self.arglist.output_prefix, 
                         f'seed={self.arglist.seed}'))
             self.game.on_init()
@@ -372,6 +372,7 @@ class OvercookedEnvironment(gym.Env):
         # For Get(X), you need to go from your current location(s) (A) to a dispenser (B).
         # A: current locations of the subtask’s agent(s)
         elif isinstance(subtask, recipe.Get):
+            ## TODO: ATTEMPT -- remove A_locs
             A_locs = [a.location for a in self.sim_agents if a.name in subtask_agent_names]
             # B: all dispenser tiles for that ingredient (already encoded as a “subtask action obj”)
             B_locs = self.world.get_all_object_locs(obj=subtask_action_obj)
