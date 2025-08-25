@@ -20,7 +20,7 @@ class GamePlay(Game):
         self.filename = filename
         # point at the screenshots folder next to this file
         ROOT = Path(__file__).resolve().parents[4]
-        self.save_dir = ROOT / 'docs' / 'exp1' / 'assets'
+        self.save_dir = ROOT / 'stimuli' / 's1_design_inference' / 'instructions' / 'screenshots'
         self.save_dir.mkdir(parents=True, exist_ok=True)
         os.makedirs(self.save_dir, exist_ok=True)
 
@@ -39,7 +39,8 @@ class GamePlay(Game):
         elif event.type == pygame.KEYDOWN:
             # Save current image
             if event.key == pygame.K_RETURN:
-                image_name = f'{self.filename}.png'
+                image_num = len([name for name in os.listdir(self.save_dir) if name.startswith(self.filename) and name.endswith('.png')])
+                image_name = f'{self.filename}_{image_num}.png'
                 pygame.image.save(self.screen, '{}/{}'.format(self.save_dir, image_name))
                 print('just saved image {} to {}'.format(image_name, self.save_dir))
                 return
