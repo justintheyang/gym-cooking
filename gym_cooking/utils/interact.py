@@ -35,10 +35,10 @@ def interact(agent, world):
 
             if mergeable(agent.holding, obj):
                 world.remove(obj)
-                o = gs.release() # agent is holding object
                 world.remove(agent.holding)
-                agent.acquire(obj)
-                world.insert(agent.holding)
+                o = agent.release()
+                gs.acquire(o)
+                world.insert(gs.holding)
 
         # if empty square in front → place or drop
         elif not world.is_occupied(gs.location):

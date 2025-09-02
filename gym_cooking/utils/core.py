@@ -51,8 +51,11 @@ class GridSquare:
         return gs
 
     def acquire(self, obj):
-        obj.location = self.location
-        self.holding = obj
+        if self.holding is None:
+            obj.location = self.location
+            self.holding = obj
+        else:
+            self.holding.merge(obj)
 
     def release(self):
         temp = self.holding

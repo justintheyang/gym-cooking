@@ -305,12 +305,14 @@ class SimAgent:
             self.holding = obj
             self.holding.is_held = True
             self.holding.location = self.location
-        else:
-            self.holding.merge(obj) # Obj(1) + Obj(2) => Obj(1+2)
+        # else:
+        #     self.holding.merge(obj) # Obj(1) + Obj(2) => Obj(1+2)
 
     def release(self):
         self.holding.is_held = False
+        temp = self.holding
         self.holding = None
+        return temp
 
     def move_to(self, new_location):
         self.location = new_location
