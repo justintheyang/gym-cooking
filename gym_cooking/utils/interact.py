@@ -61,8 +61,8 @@ def interact(agent, world):
                 gs.release()
                 agent.acquire(obj)
 
-        # if food dispenser --> dispense
-        elif not world.is_occupied(gs.location) and isinstance(gs, FoodDispenser):
-            ingredient = gs.dispense()
-            world.insert(ingredient)
-            agent.acquire(ingredient)
+        # # if food dispenser --> dispense
+        # elif not world.is_occupied(gs.location) and isinstance(gs, FoodDispenser):
+        #     ingredient = gs.dispense()
+        #     world.insert(ingredient)
+        #     agent.acquire(ingredient)

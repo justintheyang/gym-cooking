@@ -142,6 +142,16 @@ class OvercookedEnvironment(gym.Env):
                             counter.acquire(obj=obj)
                             self.world.insert(obj=counter)
                             self.world.insert(obj=obj)
+                        # Food dispenser: make food dispenser object and food on top as a hack
+                        elif rep in 'TLOP':
+                            obj = RepToClass[rep]((x, y))
+                            # self.world.objects.setdefault(obj.name, []).append(obj)
+                            obj2 = Object(
+                                    location=(x, y),
+                                    contents=RepToClass[rep.lower()]())
+                            obj.acquire(obj=obj2)
+                            self.world.insert(obj=obj)
+                            self.world.insert(obj=obj2)
                         # GridSquare, i.e. Floor, Counter, Cutboard, Delivery.
                         elif rep in RepToClass:
                             newobj = RepToClass[rep]((x, y))

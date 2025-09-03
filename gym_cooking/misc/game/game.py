@@ -103,8 +103,7 @@ class Game:
             pygame.draw.rect(self.screen, Color.COUNTER_BORDER, fill, 4)
             self.draw(
                 'Fresh' + gs.name.replace('Dispenser', ''), 
-                (self.scale * 0.8, self.scale * 0.8), 
-                (sl[0] + self.scale * 0.1, sl[1] + self.scale * 0.1))
+                (self.scale, self.scale), sl)
 
         return
 
