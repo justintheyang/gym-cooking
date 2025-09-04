@@ -22,7 +22,7 @@ from collections import namedtuple
 AgentRepr = namedtuple("AgentRepr", "name location holding")
 
 # Colors for agents.
-COLORS = ['blue', 'magenta', 'yellow', 'green']
+COLORS = ['blue', 'green', 'magenta', 'yellow']
 
 
 class RealAgent:

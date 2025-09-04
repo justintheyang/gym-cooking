@@ -70,11 +70,11 @@ class Game:
         for o in objs:
             self.draw_object(o)
 
+        self.draw_start_locations()
+        
         # Draw agents and their holdings
         for agent in self.sim_agents:
             self.draw_agent(agent)
-            
-        self.draw_start_locations()
 
         if self.play:
             pygame.display.flip()
