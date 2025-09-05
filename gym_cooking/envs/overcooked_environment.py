@@ -21,6 +21,7 @@ import copy
 import networkx as nx
 import numpy as np
 import os
+import pygame
 from itertools import combinations, permutations, product
 from collections import namedtuple
 
@@ -224,20 +225,36 @@ class OvercookedEnvironment(gym.Env):
         self.obs_tm1 = copy.copy(self)
 
         if self.arglist.record or self.arglist.with_image_obs:
+            if self.arglist.record and self.arglist.layout:
+                path = self.arglist.output_prefix
+            else: 
+                path = os.path.join(
+                        self.directory, 
+                        'records',
+                        self.arglist.output_prefix, 
+                        f'seed={self.arglist.seed}')
             self.game = GameImage(
                     filename=self.filename,
                     world=self.world,
                     sim_agents=self.sim_agents,
                     record=self.arglist.record,
                     layout=self.arglist.layout,
-                    directory=os.path.join(
-                        self.directory, 
-                        'records',
-                        self.arglist.output_prefix, 
-                        f'seed={self.arglist.seed}'))
+                    directory=path)
+            
             self.game.on_init()
             if self.arglist.record and not self.arglist.layout:
                 self.game.save_image_obs(self.t)
+            elif self.arglist.record and self.arglist.layout:
+                level = os.path.splitext(os.path.basename(self.arglist.level))[0]
+                layout_path = os.path.join(
+                    self.game.game_record_dir, 
+                    f'agents={self.arglist.num_start_locations}',
+                    f'{level}.png')
+                
+                os.makedirs(os.path.dirname(layout_path), exist_ok=True)
+
+                self.game.on_render()
+                pygame.image.save(self.game.screen, layout_path)
 
         return copy.copy(self)
 

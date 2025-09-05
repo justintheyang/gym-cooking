@@ -48,7 +48,7 @@ class GameImage(Game):
     def save_image_obs(self, t, filename=None):
         if not filename:
             filename = f"t={t:03d}.png"
-        if self.record:
+        if self.record and not self.layout:
             # Ensure directory is still present
             print(f'Saving to {self.game_record_dir}')
             os.makedirs(self.game_record_dir, exist_ok=True)
