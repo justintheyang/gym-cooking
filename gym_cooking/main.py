@@ -61,6 +61,8 @@ def parse_arguments():
         help='Where to save metrics pickle')
     parser.add_argument('--output-prefix', type=str, default=None,
         help='Filename prefix for the pickle (no extension)')
+    parser.add_argument('--return-timesteps-only', action="store_true", default=False,
+        help='Return only timestep count, skip recording/visualization')
 
     return parser.parse_args()
 
@@ -135,9 +137,12 @@ def main_loop(arglist):
     # game = GameVisualize(env)
     real_agents = initialize_agents(arglist=arglist)
 
-    # Info bag for saving pkl files
-    bag = Bag(arglist=arglist, filename=env.filename, directory=env.pickles_dir)
-    bag.set_recipe(recipe_subtasks=env.all_subtasks)
+    # Info bag for saving pkl files (only if not in timesteps-only mode)
+    if not arglist.return_timesteps_only:
+        bag = Bag(arglist=arglist, filename=env.filename, directory=env.pickles_dir)
+        bag.set_recipe(recipe_subtasks=env.all_subtasks)
+    else:
+        bag = None
 
     while not env.done():
         action_dict = {}
@@ -152,14 +157,20 @@ def main_loop(arglist):
         for agent in real_agents:
             agent.refresh_subtasks(world=env.world)
 
-        # Saving info
-        bag.add_status(cur_time=info['t'], real_agents=real_agents)
+        # Saving info (only if not in timesteps-only mode)
+        if bag is not None:
+            bag.add_status(cur_time=info['t'], real_agents=real_agents)
 
+    # If return-timesteps-only flag is set, just print timesteps and return
+    if arglist.return_timesteps_only:
+        print(f"TIMESTEPS:{env.t}")
+        return
 
-    # Saving final information before saving pkl file
-    bag.set_collisions(collisions=env.collisions)
-    bag.set_termination(termination_info=env.termination_info,
-            successful=env.successful)
+    # Saving final information before saving pkl file (only if not in timesteps-only mode)
+    if bag is not None:
+        bag.set_collisions(collisions=env.collisions)
+        bag.set_termination(termination_info=env.termination_info,
+                successful=env.successful)
 
 if __name__ == '__main__':
     arglist = parse_arguments()

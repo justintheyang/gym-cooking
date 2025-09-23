@@ -264,9 +264,9 @@ class OvercookedEnvironment(gym.Env):
                     directory=path)
             
             self.game.on_init()
-            if self.arglist.record and not self.arglist.layout:
+            if self.arglist.record and not self.arglist.layout and not getattr(self.arglist, 'return_timesteps_only', False):
                 self.game.save_image_obs(self.t)
-            elif self.arglist.record and self.arglist.layout:
+            elif self.arglist.record and self.arglist.layout and not getattr(self.arglist, 'return_timesteps_only', False):
                 level = os.path.splitext(os.path.basename(self.arglist.level))[0]
                 layout_path = os.path.join(
                     self.game.game_record_dir, 
@@ -304,7 +304,7 @@ class OvercookedEnvironment(gym.Env):
         # Visualize.
         self.display()
         self.print_agents()
-        if self.arglist.record:
+        if self.arglist.record and not getattr(self.arglist, 'return_timesteps_only', False):
             self.game.save_image_obs(self.t)
 
         # Get a plan-representation observation.
