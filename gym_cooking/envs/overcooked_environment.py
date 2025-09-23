@@ -193,9 +193,31 @@ class OvercookedEnvironment(gym.Env):
             recipe_name = self.arglist.recipe if hasattr(self.arglist, "recipe") and self.arglist.recipe else "Salad"
             self.recipes.append(globals()[recipe_name]())
 
-        # --- If no start-locations section, auto-place agents ---
+        # --- If no start-locations section, use provided start locations or auto-place agents ---
         if not found_starts_section:
-            self.auto_place_agents(num_agents)
+            # Check if start locations were provided via command line arguments
+            start_locations = [self.arglist.start_location_model1, self.arglist.start_location_model2]
+            provided_start_locations = list(filter(lambda x: x is not None, start_locations))
+            
+            # Validate that number of provided start locations matches num_agents
+            if provided_start_locations:
+                assert len(provided_start_locations) == num_agents, \
+                    f"Number of provided start locations ({len(provided_start_locations)}) should match num_agents ({num_agents})"
+            
+            if provided_start_locations:
+                # Use provided start locations
+                for i, start_loc_str in enumerate(provided_start_locations):
+                    loc = start_loc_str.split(' ')
+                    start_xy = (int(loc[0]), int(loc[1]))
+                    self.world.start_locations.append(start_xy)
+                    sim_agent = SimAgent(
+                            name='agent-'+str(len(self.sim_agents)+1),
+                            id_color=COLORS[len(self.sim_agents)],
+                            location=start_xy)
+                    self.sim_agents.append(sim_agent)
+            else:
+                # Fall back to auto-placement
+                self.auto_place_agents(num_agents)
 
 
     def reset(self):

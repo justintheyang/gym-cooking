@@ -51,6 +51,10 @@ def parse_arguments():
     parser.add_argument("--model3", type=str, default=None, help="Model type for agent 3 (bd, up, dc, fb, or greedy)")
     parser.add_argument("--model4", type=str, default=None, help="Model type for agent 4 (bd, up, dc, fb, or greedy)")
     parser.add_argument("--recipe", type=str, default=None, help="Override recipe name in the level file (e.g., Salad or SaladOL). If level file contains no recipe section, this will be used.")
+    
+    # Start locations
+    parser.add_argument("--start-location-model1", type=str, default=None, help="Start location for agent 1 in format 'x y' (e.g., '3 4')")
+    parser.add_argument("--start-location-model2", type=str, default=None, help="Start location for agent 2 in format 'x y' (e.g., '5 6')")
 
     # Data saving
     parser.add_argument('--output-dir', type=str, default=None,
