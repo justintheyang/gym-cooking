@@ -199,22 +199,18 @@ class OvercookedEnvironment(gym.Env):
             start_locations = [self.arglist.start_location_model1, self.arglist.start_location_model2]
             provided_start_locations = list(filter(lambda x: x is not None, start_locations))
             
-            # Validate that number of provided start locations matches num_agents
             if provided_start_locations:
-                assert len(provided_start_locations) == num_agents, \
-                    f"Number of provided start locations ({len(provided_start_locations)}) should match num_agents ({num_agents})"
-            
-            if provided_start_locations:
-                # Use provided start locations
+                # Initialize agents with provided start locations
                 for i, start_loc_str in enumerate(provided_start_locations):
                     loc = start_loc_str.split(' ')
                     start_xy = (int(loc[0]), int(loc[1]))
                     self.world.start_locations.append(start_xy)
-                    sim_agent = SimAgent(
-                            name='agent-'+str(len(self.sim_agents)+1),
-                            id_color=COLORS[len(self.sim_agents)],
-                            location=start_xy)
-                    self.sim_agents.append(sim_agent)
+                    if num_agents > 0:
+                        sim_agent = SimAgent(
+                                name='agent-'+str(len(self.sim_agents)+1),
+                                id_color=COLORS[len(self.sim_agents)],
+                                location=start_xy)
+                        self.sim_agents.append(sim_agent)
             else:
                 # Fall back to auto-placement
                 self.auto_place_agents(num_agents)
@@ -274,6 +270,7 @@ class OvercookedEnvironment(gym.Env):
                     f'{level}.png')
                 
                 os.makedirs(os.path.dirname(layout_path), exist_ok=True)
+                print(f"Saving layout to {layout_path}")
 
                 self.game.on_render()
                 pygame.image.save(self.game.screen, layout_path)

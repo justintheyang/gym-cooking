@@ -147,8 +147,17 @@ class Game:
         if not n or not getattr(self.world.arglist, "layout", False):
             return
 
-        # Prefer the parsed positions from the level file, fall back to sim agents (if any)
-        if hasattr(self.world, "start_locations") and self.world.start_locations:
+        # prefer the supplied start locations
+        provided_start_locations = [self.world.arglist.start_location_model1, self.world.arglist.start_location_model2]
+        provided_start_locations = list(filter(lambda x: x is not None, provided_start_locations))
+
+        # prefer the provided start locations, then the parsed positions from the level file, then the sim agents (if any)
+        if provided_start_locations:
+            provided_start_locations = [loc.split(' ') for loc in provided_start_locations]
+            provided_start_locations = [(int(loc[0]), int(loc[1])) for loc in provided_start_locations]
+            starts = provided_start_locations[:n]
+            print(f"Using provided start locations: {starts}")
+        elif hasattr(self.world, "start_locations") and self.world.start_locations:
             starts = self.world.start_locations[:n]
         else:
             starts = [a.location for a in self.sim_agents][:n]
